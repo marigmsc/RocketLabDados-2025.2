@@ -1,0 +1,28 @@
+resources:
+  jobs:
+    Pipeline_Medalhão:
+      name: Pipeline Medalhão
+      schedule:
+        quartz_cron_expression: 52 0 13 * * ?
+        timezone_id: America/Sao_Paulo
+        pause_status: UNPAUSED
+      tasks:
+        - task_key: run_bronze_ingestion
+          notebook_task:
+            notebook_path: /Workspace/Users/mgc3@cin.ufpe.br/Atividade2_Bronze.ipynb
+            source: WORKSPACE
+        - task_key: run_silver_transform
+          depends_on:
+            - task_key: run_bronze_ingestion
+          notebook_task:
+            notebook_path: /Workspace/Users/mgc3@cin.ufpe.br/Atividade2_Silver.ipynb
+            source: WORKSPACE
+        - task_key: run_gold_aggregate
+          depends_on:
+            - task_key: run_silver_transform
+          notebook_task:
+            notebook_path: /Workspace/Users/mgc3@cin.ufpe.br/Atividade3_Gold.ipynb
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
